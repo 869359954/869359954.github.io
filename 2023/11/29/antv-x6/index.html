@@ -1,0 +1,718 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/avatar.png">
+  <link rel="icon" href="/img/avatar.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#b59ab5e3">
+  <meta name="author" content="梁爽">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="业务中绘制工作流使用到了 x6，最初接触时由于排期问题写的过急，后面使用频次增加，逐渐发现可优化的点和可实现的场景，写下来简单记录一下点，本文偏于功能详细介绍，不包括详细 demo。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="antv-x6">
+<meta property="og:url" content="https://869359954.github.io/2023/11/29/antv-x6/index.html">
+<meta property="og:site_name" content="absolutely 的 blog">
+<meta property="og:description" content="业务中绘制工作流使用到了 x6，最初接触时由于排期问题写的过急，后面使用频次增加，逐渐发现可优化的点和可实现的场景，写下来简单记录一下点，本文偏于功能详细介绍，不包括详细 demo。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://869359954.github.io/img/cell.jpeg">
+<meta property="og:image" content="https://869359954.github.io/img/connector.jpeg">
+<meta property="article:published_time" content="2023-11-29T14:10:00.000Z">
+<meta property="article:modified_time" content="2023-11-29T12:59:20.238Z">
+<meta property="article:author" content="梁爽">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://869359954.github.io/img/cell.jpeg">
+  
+  
+  
+  <title>antv-x6 - absolutely 的 blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"869359954.github.io","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":4},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>absolutely&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/%E5%B0%8F%E6%B5%A3%E7%86%8A.jpeg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="antv-x6"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-11-29 22:10" pubdate>
+          2023年11月29日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          8.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          71 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">antv-x6</h1>
+            
+              <p class="note note-info">
+                
+                  
+                    本文最后更新于：2023年11月29日 晚上
+                  
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>业务中绘制工作流使用到了 x6，最初接触时由于排期问题写的过急，后面使用频次增加，逐渐发现可优化的点和可实现的场景，写下来简单记录一下点，本文偏于功能详细介绍，不包括详细 demo。</p>
+</blockquote>
+<span id="more"></span> 
+<blockquote>
+<p>另外总结：开发时还是要多看官方文档，静下心来，静下心来，静下心来！</p>
+</blockquote>
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>是一款图编辑引擎，可以快速搭建流程图、节点编辑图等，<a target="_blank" rel="noopener" href="https://antv-x6.gitee.io/zh/docs/tutorial/basic/cell">官方文档</a></p>
+<ul>
+<li>支持使用 SVG&#x2F;HTML&#x2F;React&#x2F;Vue 定制节点样式和交互</li>
+<li>内置图编辑配套拓展，包括框选、小地图等</li>
+<li>事件体系完善，可以监听处理点击、hover 事件等</li>
+</ul>
+<blockquote>
+<p>开发前可以先浏览<a target="_blank" rel="noopener" href="https://antv-x6.gitee.io/zh/examples/gallery">官方 demo</a>，有比较多的业务场景案例</p>
+</blockquote>
+<h1 id="基本使用"><a href="#基本使用" class="headerlink" title="基本使用"></a>基本使用</h1><ol>
+<li>需要先创建一个容纳 x6 画图的容器，可以是一个 div 标签</li>
+<li>准备节点、连线数据</li>
+<li>创建画布 Graph，画布支持背景、网格、缩放、平移，另外还支持背景图片配置</li>
+<li>在画布上渲染节点和边。<ul>
+<li>节点： x6 内置 rect 、circle、 ellipse、 polygon（多边形）、图片、嵌入矩形的图片等<a target="_blank" rel="noopener" href="https://antv-x6.gitee.io/zh/docs/tutorial/basic/cell#%E5%86%85%E7%BD%AE%E8%8A%82%E7%82%B9">基础图形</a>，<a target="_blank" rel="noopener" href="https://www.ruanyifeng.com/blog/2018/08/svg.html">SVG 图像入门教程</a></li>
+<li>边：样式上支持的非常灵活，可参考<a target="_blank" rel="noopener" href="https://antv-x6.gitee.io/zh/examples/gallery#category-%E6%A0%B7%E5%BC%8F">x6-边</a></li>
+<li>节点和边都支持样式定制</li>
+</ul>
+</li>
+</ol>
+<h1 id="基类-Cell"><a href="#基类-Cell" class="headerlink" title="基类 Cell"></a>基类 Cell</h1><p>Cell 是 x6 中的基础元素，所有的节点、边、组等都继承自 Cell，Cell 定义了节点和边共同的属性和方法，如样式属性、可见行、业务数据等<br><img src="/img/cell.jpeg" srcset="/img/loading.gif" lazyload></p>
+<h2 id="基础配置"><a href="#基础配置" class="headerlink" title="基础配置"></a>基础配置</h2><p>同上，Cell 的配置是节点和边都会继承可以使用的。下面记录一些容易忽略或者比较有用的，详细的还是要看官方文档</p>
+<ul>
+<li>id 节点&#x2F;边唯一标识，默认使用自动生成的 UUID</li>
+<li>markup 节点&#x2F;边的 SVG&#x2F;HTML 片段</li>
+<li>attrs 节点&#x2F;边属性样式</li>
+<li>shape 节点&#x2F;边的图形</li>
+<li>visible 节点&#x2F;边是否可见</li>
+<li>parent 节点&#x2F;边的父元素</li>
+<li>children 子节点&#x2F;边</li>
+<li>data 节点&#x2F;边关联的业务数据</li>
+</ul>
+<h3 id="markup"><a href="#markup" class="headerlink" title="markup"></a>markup</h3><p>指定渲染节点和边时使用的 SVG&#x2F;HTML 片段。使用 JSON 格式描述，例如 Shape.Rect 节点的 markup 定义如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;markup&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>    <span class="hljs-punctuation">&#123;</span><br>      <span class="hljs-attr">&quot;tagName&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;rect&quot;</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;selector&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;body&quot;</span><br>    <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-punctuation">&#123;</span><br>      <span class="hljs-attr">&quot;tagName&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text&quot;</span><span class="hljs-punctuation">,</span><br>      <span class="hljs-attr">&quot;selector&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;label&quot;</span><br>    <span class="hljs-punctuation">&#125;</span><br>  <span class="hljs-punctuation">]</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+<p>表示该节点内部包含 rect 和 text 两个 SVG 元素，渲染到页面之后，节点对应的 SVG 元素看起来像下面这样。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">g</span></span><br><span class="hljs-tag">  <span class="hljs-attr">data-cell-id</span>=<span class="hljs-string">&quot;c2e1dd06-15c6-43a4-987a-712a664b8f85&quot;</span></span><br><span class="hljs-tag">  <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;x6-cell x6-node&quot;</span></span><br><span class="hljs-tag">  <span class="hljs-attr">transform</span>=<span class="hljs-string">&quot;translate(40,40)&quot;</span></span><br><span class="hljs-tag">&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">rect</span></span><br><span class="hljs-tag">    <span class="hljs-attr">fill</span>=<span class="hljs-string">&quot;#fff&quot;</span></span><br><span class="hljs-tag">    <span class="hljs-attr">stroke</span>=<span class="hljs-string">&quot;#000&quot;</span></span><br><span class="hljs-tag">    <span class="hljs-attr">stroke-width</span>=<span class="hljs-string">&quot;2&quot;</span></span><br><span class="hljs-tag">    <span class="hljs-attr">fill-opacity</span>=<span class="hljs-string">&quot;0.5&quot;</span></span><br><span class="hljs-tag">    <span class="hljs-attr">width</span>=<span class="hljs-string">&quot;100&quot;</span></span><br><span class="hljs-tag">    <span class="hljs-attr">height</span>=<span class="hljs-string">&quot;40&quot;</span></span><br><span class="hljs-tag">  &gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">rect</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">text</span></span><br><span class="hljs-tag">    <span class="hljs-attr">font-size</span>=<span class="hljs-string">&quot;14&quot;</span></span><br><span class="hljs-tag">    <span class="hljs-attr">xml:space</span>=<span class="hljs-string">&quot;preserve&quot;</span></span><br><span class="hljs-tag">    <span class="hljs-attr">fill</span>=<span class="hljs-string">&quot;#333&quot;</span></span><br><span class="hljs-tag">    <span class="hljs-attr">text-anchor</span>=<span class="hljs-string">&quot;middle&quot;</span></span><br><span class="hljs-tag">    <span class="hljs-attr">font-family</span>=<span class="hljs-string">&quot;Arial, helvetica, sans-serif&quot;</span></span><br><span class="hljs-tag">    <span class="hljs-attr">transform</span>=<span class="hljs-string">&quot;matrix(1,0,0,1,50,20)&quot;</span></span><br><span class="hljs-tag">  &gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">tspan</span> <span class="hljs-attr">dy</span>=<span class="hljs-string">&quot;0.3em&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;v-line&quot;</span>&gt;</span>rect<span class="hljs-tag">&lt;/<span class="hljs-name">tspan</span>&gt;</span><br>  <span class="hljs-tag">&lt;/<span class="hljs-name">text</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">g</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>markup 配置项如下：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs typescript"><span class="hljs-keyword">interface</span> <span class="hljs-title class_">Markup</span> &#123;<br>  <span class="hljs-attr">tagName</span>: <span class="hljs-built_in">string</span> <span class="hljs-comment">//元素标签名，对应 SVG 标签如 rect、text。也可以指定HTML标签，需要一下配置ns属性</span><br>  ns?: <span class="hljs-built_in">string</span> <span class="hljs-comment">//设置 tagName 的命名空间，如果 tagName 使用的是 SVG 的标签名，则为&quot;http://www.w3.org/2000/svg&quot;（默认值）；如果tagName指定的标签是HTML元素时，需要指定为&quot;http://www.w3.org/1999/xhtml&quot;</span><br>  selector?: <span class="hljs-built_in">string</span> <span class="hljs-comment">//设置该元素的选择器，在 attr 中通过这个选择器来为该元素设置样式</span><br>  groupSelector?: <span class="hljs-built_in">string</span> | <span class="hljs-built_in">string</span>[] <span class="hljs-comment">//群组选择器。为多个元素设置相同群组选择器，可以添加公共属性</span><br>  attrs?: &#123; [<span class="hljs-attr">key</span>: <span class="hljs-built_in">string</span>]: <span class="hljs-built_in">string</span> | <span class="hljs-built_in">number</span> &#125; <span class="hljs-comment">//markup中的attrs属性只支持原生的SVG属性，X6的自定义属性在这里不可用</span><br>  style?: &#123; [<span class="hljs-attr">key</span>:<span class="hljs-built_in">string</span>]: <span class="hljs-built_in">string</span> | <span class="hljs-built_in">number</span> &#125;<br>  className?: <span class="hljs-built_in">string</span> | <span class="hljs-built_in">string</span>[] textContent?: <span class="hljs-built_in">string</span><br>  children?: <span class="hljs-title class_">Markup</span>[] <span class="hljs-comment">//嵌套的子元素</span><br>&#125;<br><br><span class="hljs-comment">//实际配置</span><br>&#123;<br>  <span class="hljs-string">&quot;markup&quot;</span>: [<br>    &#123;<br>      <span class="hljs-string">&quot;tagName&quot;</span>: <span class="hljs-string">&quot;rect&quot;</span>,<br>      <span class="hljs-string">&quot;selector&quot;</span>: <span class="hljs-string">&quot;body&quot;</span>,<br>      ...<br>    &#125;,<br>    &#123;<br>      <span class="hljs-string">&quot;tagName&quot;</span>: <span class="hljs-string">&quot;text&quot;</span>,<br>      <span class="hljs-string">&quot;selector&quot;</span>: <span class="hljs-string">&quot;label&quot;</span>,<br>      ...<br>    &#125;<br>  ]<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="attrs"><a href="#attrs" class="headerlink" title="attrs"></a>attrs</h3><h4 id="定制节点样式"><a href="#定制节点样式" class="headerlink" title="定制节点样式"></a>定制节点样式</h4><p>用来定制节点样式。attrs 是一个对象，key 为节点的元素选择器 selector ，对应的值是 SVG 元素的 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/SVG/Tutorial/Fills_and_Strokes">SVG 属性值</a></p>
+<p>选择器 selector 由节点&#x2F;边的 markup 决定，如 Shape.Rect 节点定义了 ‘body’（代表<rect>元素）和 ‘label’(代表 <text> 元素) 两个选择器</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> rect = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Shape</span>.<span class="hljs-title class_">Rect</span>(&#123;<br>  <span class="hljs-attr">x</span>: <span class="hljs-number">40</span>,<br>  <span class="hljs-attr">y</span>: <span class="hljs-number">40</span>,<br>  <span class="hljs-attr">width</span>: <span class="hljs-number">100</span>,<br>  <span class="hljs-attr">height</span>: <span class="hljs-number">40</span>,<br>  <span class="hljs-attr">attrs</span>: &#123;<br>    <span class="hljs-attr">body</span>: &#123;<br>      <span class="hljs-attr">fill</span>: <span class="hljs-string">&#x27;#2ECC71&#x27;</span>,<br>      <span class="hljs-attr">stroke</span>: <span class="hljs-string">&#x27;#000&#x27;</span>,<br>    &#125;,<br>    <span class="hljs-attr">label</span>: &#123;<br>      <span class="hljs-attr">text</span>: <span class="hljs-string">&#x27;rect&#x27;</span>,<br>      <span class="hljs-attr">fill</span>: <span class="hljs-string">&#x27;#333&#x27;</span>,<br>      <span class="hljs-attr">fontSize</span>: <span class="hljs-number">13</span>,<br>    &#125;,<br>  &#125;,<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<p>节点渲染到画布后的 DOM 结构看起来像下面这样:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">g</span></span><br><span class="hljs-tag">  <span class="hljs-attr">data-cell-id</span>=<span class="hljs-string">&quot;3ee1452c-6d75-478d-af22-88e03c6d513b&quot;</span></span><br><span class="hljs-tag">  <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;x6-cell x6-node&quot;</span></span><br><span class="hljs-tag">  <span class="hljs-attr">transform</span>=<span class="hljs-string">&quot;translate(40,40)&quot;</span></span><br><span class="hljs-tag">&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">rect</span></span><br><span class="hljs-tag">    <span class="hljs-attr">fill</span>=<span class="hljs-string">&quot;#2ECC71&quot;</span></span><br><span class="hljs-tag">    <span class="hljs-attr">stroke</span>=<span class="hljs-string">&quot;#000&quot;</span></span><br><span class="hljs-tag">    <span class="hljs-attr">stroke-width</span>=<span class="hljs-string">&quot;2&quot;</span></span><br><span class="hljs-tag">    <span class="hljs-attr">width</span>=<span class="hljs-string">&quot;100&quot;</span></span><br><span class="hljs-tag">    <span class="hljs-attr">height</span>=<span class="hljs-string">&quot;40&quot;</span></span><br><span class="hljs-tag">  &gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">rect</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">text</span></span><br><span class="hljs-tag">    <span class="hljs-attr">font-size</span>=<span class="hljs-string">&quot;13&quot;</span></span><br><span class="hljs-tag">    <span class="hljs-attr">xml:space</span>=<span class="hljs-string">&quot;preserve&quot;</span></span><br><span class="hljs-tag">    <span class="hljs-attr">fill</span>=<span class="hljs-string">&quot;#333&quot;</span></span><br><span class="hljs-tag">    <span class="hljs-attr">text-anchor</span>=<span class="hljs-string">&quot;middle&quot;</span></span><br><span class="hljs-tag">    <span class="hljs-attr">font-family</span>=<span class="hljs-string">&quot;Arial, helvetica, sans-serif&quot;</span></span><br><span class="hljs-tag">    <span class="hljs-attr">transform</span>=<span class="hljs-string">&quot;matrix(1,0,0,1,50,20)&quot;</span></span><br><span class="hljs-tag">  &gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">tspan</span> <span class="hljs-attr">dy</span>=<span class="hljs-string">&quot;0.3em&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;v-line&quot;</span>&gt;</span> rect <span class="hljs-tag">&lt;/<span class="hljs-name">tspan</span>&gt;</span><br>  <span class="hljs-tag">&lt;/<span class="hljs-name">text</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">g</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>另外，我们还<strong>可以使用 CSS 选择器来指定节点样式</strong>，这样我们就不用记住预定的选择器名称，只需要根据渲染后的 DOM 结构来定义样式即可。使用 CSS 选择器时需要注意，指定的 CSS 选择器可能选中多个元素，这时对应的属性样式将同时应用到多个元素上。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> rect = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Shape</span>.<span class="hljs-title class_">Rect</span>(&#123;<br>  <span class="hljs-attr">x</span>: <span class="hljs-number">40</span>,<br>  <span class="hljs-attr">y</span>: <span class="hljs-number">40</span>,<br>  <span class="hljs-attr">width</span>: <span class="hljs-number">100</span>,<br>  <span class="hljs-attr">height</span>: <span class="hljs-number">40</span>,<br>  <span class="hljs-attr">attrs</span>: &#123;<br>    <span class="hljs-attr">rect</span>: &#123;<br>      <span class="hljs-comment">// 使用 rect css 选择器替代预定义的 body 选择器</span><br>      <span class="hljs-attr">fill</span>: <span class="hljs-string">&#x27;#2ECC71&#x27;</span>,<br>      <span class="hljs-attr">stroke</span>: <span class="hljs-string">&#x27;#000&#x27;</span>,<br>    &#125;,<br>    <span class="hljs-attr">text</span>: &#123;<br>      <span class="hljs-comment">// 使用 text css 选择器替代预定义的 label 选择器</span><br>      <span class="hljs-attr">text</span>: <span class="hljs-string">&#x27;rect&#x27;</span>,<br>      <span class="hljs-attr">fill</span>: <span class="hljs-string">&#x27;#333&#x27;</span>,<br>      <span class="hljs-attr">fontSize</span>: <span class="hljs-number">13</span>,<br>    &#125;,<br>  &#125;,<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<h4 id="更新节点样式"><a href="#更新节点样式" class="headerlink" title="更新节点样式"></a>更新节点样式</h4><p>创建节点&#x2F;边后可以调用实例上的 attr() 方法来更新节点&#x2F;边的属性值，看下面代码，通过 &#x2F; 分割的路径修改样式，label 选择器对应到 <text> 元素，text 则是该元素的属性名，’hello’ 是新的属性值,传入 null 时可移除该属性。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs javascript">rect.<span class="hljs-title function_">attr</span>(<span class="hljs-string">&#x27;label/text&#x27;</span>, <span class="hljs-string">&#x27;hello&#x27;</span>);<br><br><span class="hljs-comment">// 等同于</span><br>rect.<span class="hljs-title function_">attr</span>(<span class="hljs-string">&#x27;label&#x27;</span>, &#123;<br>  <span class="hljs-attr">text</span>: <span class="hljs-string">&#x27;hello&#x27;</span>,<br>&#125;);<br><br><span class="hljs-comment">// 等同于</span><br>rect.<span class="hljs-title function_">attr</span>(&#123;<br>  <span class="hljs-attr">label</span>: &#123;<br>    <span class="hljs-attr">text</span>: <span class="hljs-string">&#x27;hello&#x27;</span>,<br>  &#125;,<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<h3 id="选项默认值（公共配置）"><a href="#选项默认值（公共配置）" class="headerlink" title="选项默认值（公共配置）"></a>选项默认值（公共配置）</h3><p>Cell.config(options) 用来配置选项默认值，一般在自定义节点&#x2F;边时用到，去设置自定义节点&#x2F;边的默配置项的默认值。详见<a target="_blank" rel="noopener" href="https://antv-x6.gitee.io/zh/docs/tutorial/basic/cell#%E9%80%89%E9%A1%B9%E9%BB%98%E8%AE%A4%E5%80%BC">官方文档</a></p>
+<h1 id="节点-Node"><a href="#节点-Node" class="headerlink" title="节点 Node"></a>节点 Node</h1><p>节点除了从 Cell 继承的选项外，还支持以下选项：</p>
+<ul>
+<li>x 节点位置 x 坐标，单位 px</li>
+<li>y y 坐标，同 x</li>
+<li>width</li>
+<li>height</li>
+<li>angle 节点旋转角度</li>
+</ul>
+<h2 id="创建节点"><a href="#创建节点" class="headerlink" title="创建节点"></a>创建节点</h2><p>两个方式，构造函数创建和 Graph.addNode() 创建</p>
+<ol>
+<li>构造函数创建，通过形状的构造函数创建出节点再调用 addNode 添加到画布</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">import</span> &#123; <span class="hljs-title class_">Shape</span> &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;@antv/x6&#x27;</span>;<br><br><span class="hljs-comment">// 创建节点</span><br><span class="hljs-keyword">const</span> rect = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Shape</span>.<span class="hljs-title class_">Rect</span>(&#123;<br>  <span class="hljs-attr">x</span>: <span class="hljs-number">100</span>,<br>  <span class="hljs-attr">y</span>: <span class="hljs-number">200</span>,<br>  <span class="hljs-attr">width</span>: <span class="hljs-number">80</span>,<br>  <span class="hljs-attr">height</span>: <span class="hljs-number">40</span>,<br>  <span class="hljs-attr">angle</span>: <span class="hljs-number">30</span>,<br>  <span class="hljs-attr">attrs</span>: &#123;<br>    <span class="hljs-attr">body</span>: &#123;<br>      <span class="hljs-attr">fill</span>: <span class="hljs-string">&#x27;blue&#x27;</span>,<br>    &#125;,<br>    <span class="hljs-attr">label</span>: &#123;<br>      <span class="hljs-attr">text</span>: <span class="hljs-string">&#x27;Hello&#x27;</span>,<br>      <span class="hljs-attr">fill</span>: <span class="hljs-string">&#x27;white&#x27;</span>,<br>    &#125;,<br>  &#125;,<br>&#125;);<br><br><span class="hljs-comment">// 添加到画布</span><br>graph.<span class="hljs-title function_">addNode</span>(rect);<br></code></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>直接添加到画布，通过 Graph.addNode() 添加 <strong>推荐使用</strong><br>通过 shape 来指定图形，x6 内部会根据 shape 找到对应的构造函数来初始化节点并加到画布。这里的 shape 也可以使用自定义节点</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> rect = graph.<span class="hljs-title function_">addNode</span>(&#123;<br>  <span class="hljs-attr">shape</span>: <span class="hljs-string">&#x27;rect&#x27;</span>, <span class="hljs-comment">// 指定使用何种图形，默认值为 &#x27;rect&#x27;</span><br>  <span class="hljs-attr">x</span>: <span class="hljs-number">100</span>,<br>  <span class="hljs-attr">y</span>: <span class="hljs-number">200</span>,<br>  <span class="hljs-attr">width</span>: <span class="hljs-number">80</span>,<br>  <span class="hljs-attr">height</span>: <span class="hljs-number">40</span>,<br>  <span class="hljs-attr">angle</span>: <span class="hljs-number">30</span>,<br>  <span class="hljs-attr">attrs</span>: &#123;<br>    <span class="hljs-attr">body</span>: &#123;<br>      <span class="hljs-attr">fill</span>: <span class="hljs-string">&#x27;blue&#x27;</span>,<br>    &#125;,<br>    <span class="hljs-attr">label</span>: &#123;<br>      <span class="hljs-attr">text</span>: <span class="hljs-string">&#x27;Hello&#x27;</span>,<br>      <span class="hljs-attr">fill</span>: <span class="hljs-string">&#x27;white&#x27;</span>,<br>    &#125;,<br>  &#125;,<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<h1 id="边"><a href="#边" class="headerlink" title="边"></a>边</h1><h2 id="创建边"><a href="#创建边" class="headerlink" title="创建边"></a>创建边</h2><p>同节点一样，创建边有两种方式，这里只放一个官方推荐的 addEdge</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> rect = graph.<span class="hljs-title function_">addEdge</span>(&#123;<br>  <span class="hljs-attr">shape</span>: <span class="hljs-string">&#x27;edge&#x27;</span>, <span class="hljs-comment">// 指定使用何种图形，默认值为 &#x27;edge&#x27;</span><br>  <span class="hljs-attr">source</span>: rect1,<br>  <span class="hljs-attr">target</span>: rect2,<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<p>配置项支持：</p>
+<ul>
+<li>source 边源节点，也可以是点</li>
+<li>target 边目标节点，<strong>也可以是点</strong></li>
+<li>attrs 同节点 attrs 配置，可以配置线的箭头样式</li>
+<li>vertices 路径点，边从起始点开始，按顺序经过路径点，最后到达终止点。</li>
+<li>router 路由，连线的走势，如绕过点等,router 将对 vertices 进一步处理，并在必要时添加额外的点，然后返回处理后的点。</li>
+<li>connector 连线,消费 router 生成的点，连线样式如曲线，直接圆角等</li>
+<li>labels 多标签，可以配置数组支持多标签</li>
+<li>label 单标签</li>
+<li>defaultLabel 默认标签</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-comment">//可以和点连线</span><br>graph.<span class="hljs-title function_">addEdge</span>(&#123;<br>  <span class="hljs-attr">source</span>: <span class="hljs-string">&#x27;rect1&#x27;</span>, <span class="hljs-comment">// 源节点 ID</span><br>  <span class="hljs-attr">target</span>: &#123; <span class="hljs-attr">x</span>: <span class="hljs-number">100</span>, <span class="hljs-attr">y</span>: <span class="hljs-number">120</span> &#125;, <span class="hljs-comment">// 目标点</span><br>  <span class="hljs-attr">vertices</span>: [<br>    &#123; <span class="hljs-attr">x</span>: <span class="hljs-number">100</span>, <span class="hljs-attr">y</span>: <span class="hljs-number">200</span> &#125;,<br>    &#123; <span class="hljs-attr">x</span>: <span class="hljs-number">300</span>, <span class="hljs-attr">y</span>: <span class="hljs-number">120</span> &#125;,<br>  ], <span class="hljs-comment">// 路径点</span><br>  <span class="hljs-attr">router</span>: &#123;<br>    <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;orth&#x27;</span>,<br>    <span class="hljs-attr">args</span>: &#123;&#125;,<br>  &#125;,<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<h2 id="路由-Router"><a href="#路由-Router" class="headerlink" title="路由 Router"></a>路由 Router</h2><p>路由是一种策略，用于将边连接到节点。X6 内置了多种<a target="_blank" rel="noopener" href="https://antv-x6.gitee.io/zh/docs/api/registry/router#orth">路由策略</a>，如 ‘orth’（正交）、’polyline’（折线）、’Manhattan’（曼哈顿）等。还可以<a target="_blank" rel="noopener" href="https://antv-x6.gitee.io/zh/docs/api/registry/router#%E8%87%AA%E5%AE%9A%E4%B9%89%E8%B7%AF%E7%94%B1">自定义路由</a></p>
+<h2 id="连接器-connector"><a href="#连接器-connector" class="headerlink" title="连接器 connector"></a>连接器 connector</h2><p>链接器 connector 将路由 router 返回的点加工成渲染边需要的 pathData。例如，rounded 连接器将连线之间的倒角处理为圆弧倒角。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs javascript">graph.<span class="hljs-title function_">addEdge</span>(&#123;<br>  <span class="hljs-attr">source</span>: rect1,<br>  <span class="hljs-attr">target</span>: rect2,<br>  <span class="hljs-attr">vertices</span>: [<br>    &#123; <span class="hljs-attr">x</span>: <span class="hljs-number">100</span>, <span class="hljs-attr">y</span>: <span class="hljs-number">200</span> &#125;,<br>    &#123; <span class="hljs-attr">x</span>: <span class="hljs-number">300</span>, <span class="hljs-attr">y</span>: <span class="hljs-number">120</span> &#125;,<br>  ],<br>  <span class="hljs-attr">router</span>: <span class="hljs-string">&#x27;orth&#x27;</span>,<br>  <span class="hljs-attr">connector</span>: &#123;<br>    <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;rounded&#x27;</span>,<br>    <span class="hljs-attr">args</span>: &#123;&#125;,<br>  &#125;,<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<p><img src="/img/connector.jpeg" srcset="/img/loading.gif" lazyload></p>
+<p>x6 默认提供了直线连接器、平滑连接器、圆弧连接器、跳线连接器等多种连接器，也可以<a target="_blank" rel="noopener" href="https://antv-x6.gitee.io/zh/docs/api/registry/connector#normal">自定义连接器</a></p>
+<h2 id="标签-labels"><a href="#标签-labels" class="headerlink" title="标签 labels"></a>标签 labels</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> edge = graph.<span class="hljs-title function_">addEdge</span>(&#123;<br>  <span class="hljs-attr">source</span>: rect1,<br>  <span class="hljs-attr">target</span>: rect2,<br>  <span class="hljs-attr">labels</span>: [<br>    &#123;<br>      <span class="hljs-attr">attrs</span>: &#123; <span class="hljs-attr">label</span>: &#123; <span class="hljs-attr">text</span>: <span class="hljs-string">&#x27;edge&#x27;</span> &#125; &#125;,<br>    &#125;,<br>  ],<br>&#125;);<br><span class="hljs-comment">// 或</span><br><span class="hljs-keyword">const</span> edge = graph.<span class="hljs-title function_">addEdge</span>(&#123;<br>  <span class="hljs-attr">source</span>: rect1,<br>  <span class="hljs-attr">target</span>: rect2,<br>  <span class="hljs-attr">labels</span>: [<span class="hljs-string">&#x27;edge&#x27;</span>], <span class="hljs-comment">// 通过 labels 可以设置多个标签，当只设置标签文本是可以简化为此写法</span><br>&#125;);<br><span class="hljs-comment">// 或</span><br><span class="hljs-keyword">const</span> edge = graph.<span class="hljs-title function_">addEdge</span>(&#123;<br>  <span class="hljs-attr">source</span>: rect1,<br>  <span class="hljs-attr">target</span>: rect2,<br>  <span class="hljs-attr">label</span>: <span class="hljs-string">&#x27;edge&#x27;</span>, <span class="hljs-comment">// 通过 label 设置单个标签，当只设置标签文本是可以简化为此写法</span><br>&#125;);<br><br><span class="hljs-comment">// 设置标签</span><br>edge.<span class="hljs-title function_">setLabels</span>([<br>  &#123;<br>    <span class="hljs-attr">attrs</span>: &#123; <span class="hljs-attr">label</span>: &#123; <span class="hljs-attr">text</span>: <span class="hljs-string">&#x27;edge&#x27;</span> &#125; &#125;,<br>  &#125;,<br>]);<br><span class="hljs-comment">// 或</span><br>edge.<span class="hljs-title function_">setLabels</span>([<span class="hljs-string">&#x27;edge&#x27;</span>]);<br><br><span class="hljs-comment">// 添加单个标签</span><br>edge.<span class="hljs-title function_">appendLabel</span>(&#123;<br>  <span class="hljs-attr">attrs</span>: &#123; <span class="hljs-attr">label</span>: &#123; <span class="hljs-attr">text</span>: <span class="hljs-string">&#x27;edge&#x27;</span> &#125; &#125;,<br>&#125;);<br><span class="hljs-comment">// 或</span><br>edge.<span class="hljs-title function_">appendLabel</span>(<span class="hljs-string">&#x27;edge&#x27;</span>);<br></code></pre></td></tr></table></figure>
+
+<h1 id="事件"><a href="#事件" class="headerlink" title="事件"></a>事件</h1><p>监听事件的方式：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs javascript">graph.<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;eventxxx...&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">&#123; e, x, y, cell, view &#125;</span>) =&gt;</span> &#123;&#125;);<br>graph.<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;node:click&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">&#123; e, x, y, node, view &#125;</span>) =&gt;</span> &#123;&#125;);<br>graph.<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;edge:click&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">&#123; e, x, y, edge, view &#125;</span>) =&gt;</span> &#123;&#125;);<br></code></pre></td></tr></table></figure>
+
+<p>自定义元素的点击事件：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs javascript">node.<span class="hljs-title function_">attr</span>(&#123;<br>  <span class="hljs-comment">// 自定义一个 node:delete 事件， 表示一个删除按钮，点击时删除该节点</span><br>  <span class="hljs-attr">image</span>: &#123;<br>    <span class="hljs-attr">event</span>: <span class="hljs-string">&#x27;node:delete&#x27;</span>,<br>    <span class="hljs-attr">xlinkHref</span>: <span class="hljs-string">&#x27;trash.png&#x27;</span>,<br>    <span class="hljs-attr">width</span>: <span class="hljs-number">20</span>,<br>    <span class="hljs-attr">height</span>: <span class="hljs-number">20</span>,<br>  &#125;,<br>&#125;);<br><br><span class="hljs-comment">//可以通过绑定的事件名 node:delete 或通用的 cell:customevent、node:customevent、edge:customevent 事件名来监听</span><br>graph.<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;node:delete&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">&#123; view, e &#125;</span>) =&gt;</span> &#123;<br>  e.<span class="hljs-title function_">stopPropagation</span>();<br>  view.<span class="hljs-property">cell</span>.<span class="hljs-title function_">remove</span>();<br>&#125;);<br><span class="hljs-comment">//或者</span><br>graph.<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;node:customevent&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">&#123; name, view, e &#125;</span>) =&gt;</span> &#123;<br>  <span class="hljs-keyword">if</span> (name === <span class="hljs-string">&#x27;node:delete&#x27;</span>) &#123;<br>    e.<span class="hljs-title function_">stopPropagation</span>();<br>    view.<span class="hljs-property">cell</span>.<span class="hljs-title function_">remove</span>();<br>  &#125;<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<h1 id="Tools"><a href="#Tools" class="headerlink" title="Tools"></a>Tools</h1><p><a href="">官方 demo</a><br>工具是渲染在节点&#x2F;边上的小部件，用于增强节点&#x2F;边的交互能力，提供了一些内置工具：</p>
+<ul>
+<li><p>节点<br>button 在指定位置处渲染一个按钮，支持自定义按钮的点击交互。<br>button-remove 在指定的位置处，渲染一个删除按钮，点击时删除对应的节点。<br>boundary 根据节点的包围盒渲染一个包围节点的矩形。注意，该工具仅仅渲染一个矩形，不带任何交互。</p>
+</li>
+<li><p>边<br>vertices 路径点工具，在路径点位置渲染一个小圆点，拖动小圆点修改路径点位置，双击小圆点删除路径点，在边上单击添加路径点。<br>segments 线段工具。在边的每条线段的中心渲染一个工具条，可以拖动工具条调整线段两端的路径点的位置。<br>boundary 根据边的包围盒渲染一个包围边的矩形。注意，该工具仅仅渲染一个矩形，不带任何交互。<br>button 在指定位置处渲染一个按钮，支持自定义按钮的点击交互。<br>button-remove 在指定的位置处，渲染一个删除按钮，点击时删除对应的边。<br>source-arrowhead-和-target-arrowhead 在边的起点或终点渲染一个图形(默认是箭头)，拖动该图形来修改边的起点或终点。</p>
+</li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>antv-x6</div>
+      <div>https://869359954.github.io/2023/11/29/antv-x6/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>梁爽</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年11月29日</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>更新于</div>
+          <div>2023年11月29日</div>
+        </div>
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/08/21/worker%20%E5%92%8C%20sharedWorker/" title="worker 和 sharedWorker">
+                        <span class="hidden-mobile">worker 和 sharedWorker</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

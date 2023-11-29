@@ -1,0 +1,717 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/avatar.png">
+  <link rel="icon" href="/img/avatar.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#b59ab5e3">
+  <meta name="author" content="梁爽">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="通过本文可以了解到：  Service Worker 上手 浏览器 Cache Storage 使用 结合 Service Worker 与 Cache Storage 实现页面稳定性提高和提高静态资源响应速度">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于 Service Worker 和 Cache 的性能优化">
+<meta property="og:url" content="https://869359954.github.io/2023/02/11/%E5%9F%BA%E4%BA%8E%20Service%20Worker%20%E5%92%8C%20Cache%20%E7%9A%84%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/index.html">
+<meta property="og:site_name" content="absolutely 的 blog">
+<meta property="og:description" content="通过本文可以了解到：  Service Worker 上手 浏览器 Cache Storage 使用 结合 Service Worker 与 Cache Storage 实现页面稳定性提高和提高静态资源响应速度">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://869359954.github.io/img/sw/sw1.png">
+<meta property="og:image" content="https://869359954.github.io/img/sw/sw2.png">
+<meta property="og:image" content="https://869359954.github.io/img/sw/sw3.png">
+<meta property="og:image" content="https://869359954.github.io/img/sw/sw4.png">
+<meta property="og:image" content="https://869359954.github.io/img/sw/sw5.png">
+<meta property="og:image" content="https://869359954.github.io/img/sw/sw7.png">
+<meta property="og:image" content="https://869359954.github.io/img/sw/sw8.png">
+<meta property="og:image" content="https://869359954.github.io/img/sw/sw9.png">
+<meta property="og:image" content="https://869359954.github.io/img/sw/sw10.png">
+<meta property="og:image" content="https://869359954.github.io/img/sw/sw11.png">
+<meta property="og:image" content="https://869359954.github.io/img/sw/sw12.png">
+<meta property="og:image" content="https://869359954.github.io/img/sw/sw13.png">
+<meta property="article:published_time" content="2023-02-11T05:00:00.000Z">
+<meta property="article:modified_time" content="2023-11-29T13:02:00.763Z">
+<meta property="article:author" content="梁爽">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://869359954.github.io/img/sw/sw1.png">
+  
+  
+  
+  <title>基于 Service Worker 和 Cache 的性能优化 - absolutely 的 blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"869359954.github.io","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":4},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>absolutely&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/%E5%B0%8F%E6%B5%A3%E7%86%8A.jpeg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="基于 Service Worker 和 Cache 的性能优化"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-02-11 13:00" pubdate>
+          2023年2月11日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          76 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">基于 Service Worker 和 Cache 的性能优化</h1>
+            
+              <p class="note note-info">
+                
+                  
+                    本文最后更新于：2023年11月29日 晚上
+                  
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>通过本文可以了解到：</p>
+<ul>
+<li>Service Worker 上手</li>
+<li>浏览器 Cache Storage 使用</li>
+<li>结合 Service Worker 与 Cache Storage 实现页面稳定性提高和提高静态资源响应速度</li>
+</ul>
+</blockquote>
+<span id="more"></span>
+
+<h2 id="Service-Worker"><a href="#Service-Worker" class="headerlink" title="Service Worker"></a>Service Worker</h2><p>我理解的 Service Worker ： 运行在浏览器后台的 js 脚本，可以监听、改写页面的网络请求，根据 js 脚本做相应的处理，如使用缓存、发起请求等。相当于浏览器和服务器之间的一个可编程的网络代理，可以控制页面请求如何发出，如何响应</p>
+<h3 id="兼容性"><a href="#兼容性" class="headerlink" title="兼容性"></a>兼容性</h3><p><img src="/img/sw/sw1.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"><br>在 Firefox 浏览器的用户隐私模式，Service Worker 不可用</p>
+<h3 id="与页面交互"><a href="#与页面交互" class="headerlink" title="与页面交互"></a>与页面交互</h3><p>独立的 js 线程，不能直接操控 dom ，与页面之间可以通过 postMessage 通信</p>
+<h3 id="生命周期"><a href="#生命周期" class="headerlink" title="生命周期"></a>生命周期</h3><p>Service Worker 的生命周期独立于页面</p>
+<ol>
+<li>调用 navigator.serviceWorker.register 开始，浏览器开始下载 sw.js 并开始解析执行</li>
+<li>然后进入安装阶段，这个阶段可以在 sw.js 脚本中监听 install 事件，install 事件中可以对前置资源进行缓存。需要注意的是，如果此阶段资源缓存失败将会导致此次 Service Worker 安装失败，但是也不必担心，后续 Service Worker 会重新下载安装</li>
+<li>安装完成之后，浏览器判断当前 scope（目录，url path） 是否存在已激活的 Service Worker ，如果存在，新安装的 Service Worker 会进入等待阶段<ul>
+<li>等待已激活的 worker 不再对任意页面进行控制</li>
+<li>等待新安装 Service Worker 是否有 self.skipWaiting() 的执行</li>
+<li>或者某个页面执行了 registration.update()</li>
+</ul>
+</li>
+<li>进入激活阶段的 Service Worker 才能托管页面</li>
+</ol>
+<blockquote>
+<p>当前 scope 已经存在 Service Worker 的情况下，后续的 Service Worker 会存在等待期，原因在于页面（Client）与 Service Worker 是多对一的关系。<br>一个 scope 下的激活的 Service Worker 只有一个，也就是说我们通过多个 tab 页打开的多个页面，实际托管的 Service Worker 只有一个。需要注意处理 Service Worker 新老版本兼容，比如我们上线了最新的 sw 文件，用户刷新某一个页面时，安装了最新的 Service Worker 。如果再切换回老代码页面，此时为新 worker 在接管页面，如果不兼容操作时会报错甚至白屏</p>
+</blockquote>
+<blockquote>
+<p>如果页面中存在多个 Service Worker 时，使用和当前页面 url 最长 path 匹配即当前 html 最近的 sw.js 托管当前页面</p>
+</blockquote>
+<h3 id="只支持-HTTPS"><a href="#只支持-HTTPS" class="headerlink" title="只支持 HTTPS"></a>只支持 HTTPS</h3><p>出于安全考量，Service workers 只能由 HTTPS 承载。注册 Service Worker 需要用到 navigator.serviceWorker ，但是 http 协议下该 api 为 undefined 。为了便于开发调试，浏览器在 localhost 和 127.0.0.1:port 场景下保存了 navigator.serviceWorker api 。</p>
+<p><img src="/img/sw/sw2.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
+<h3 id="开始使用"><a href="#开始使用" class="headerlink" title="开始使用"></a>开始使用</h3><h4 id="注册-Service-Worker"><a href="#注册-Service-Worker" class="headerlink" title="注册 Service Worker"></a>注册 Service Worker</h4><p>创建一个 html ，引入入口文件 index.js ，index.js 中我们注册 Service Worker</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs typescript"><span class="hljs-comment">//src/index.js</span><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">initSw</span> = (<span class="hljs-params"></span>) =&gt; &#123;<br>  <span class="hljs-variable language_">window</span>.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&#x27;load&#x27;</span>, <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-comment">//sw.js 放在网站根目录，代理网站所有资源</span><br>    navigator.<span class="hljs-property">serviceWorker</span>.<span class="hljs-title function_">register</span>(<span class="hljs-string">&#x27;/sw.js&#x27;</span>).<span class="hljs-title function_">then</span>(<br>      <span class="hljs-keyword">function</span> (<span class="hljs-params">registration</span>) &#123;<br>        <span class="hljs-comment">// Registration was successful</span><br>        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<br>          <span class="hljs-string">&#x27;ServiceWorker registration successful with scope: &#x27;</span>,<br>          registration.<span class="hljs-property">scope</span><br>        );<br>      &#125;,<br>      <span class="hljs-keyword">function</span> (<span class="hljs-params">err</span>) &#123;<br>        <span class="hljs-comment">// registration failed :(</span><br>        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;ServiceWorker registration failed: &#x27;</span>, err);<br>      &#125;<br>    );<br>  &#125;);<br>&#125;;<br><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">init</span> = (<span class="hljs-params"></span>) =&gt; &#123;<br>  <span class="hljs-title function_">initSw</span>();<br>&#125;;<br><br><span class="hljs-title function_">init</span>();<br></code></pre></td></tr></table></figure>
+
+<p>可以看到控制台输出：<br><img src="/img/sw/sw3.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"><br>查看 Application ，可以看到当前页面注册的所有 Service Worker：<br><img src="/img/sw/sw4.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"><br>可以通过 chrome:&#x2F;&#x2F;serviceworker-internals&#x2F;?devtools 查看当前浏览器注册的所有 Service Worker<br><img src="/img/sw/sw5.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
+<h4 id="监听-fetch"><a href="#监听-fetch" class="headerlink" title="监听 fetch"></a>监听 fetch</h4><p>在 sw.js 文件中监听 fetch<br>（注意： 改写 sw 之后需要重启 Service Worker ，可以勾选 Update on reload 选项，否则 sw 资源不会更新）</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs typescript"><span class="hljs-comment">//sw.js</span><br>self.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&#x27;fetch&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">event</span>) =&gt;</span> &#123;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;event&#x27;</span>, event);<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<p>输出的 event 对象：<br>![在这里插入图片描述]&#x2F;img&#x2F;sw&#x2F;sw6.png)<br>可以拿到 request ，进行请求改写或其他操作</p>
+<h4 id="respondWith-请求改写"><a href="#respondWith-请求改写" class="headerlink" title="respondWith - 请求改写"></a>respondWith - 请求改写</h4><p>fetch event 对象提供了 respondWith 方法，提供了在 service Worker 中修改 response 的能力。<br>在 fetch.js 中发起一个请求，请求为本地模拟：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs typescript"><span class="hljs-comment">// /api/test.json</span><br>&#123;<br>  <span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;testapi&quot;</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>发起 &#x2F;api&#x2F;test 请求会返回 {“name”: “testapi”}<br>demo 中的请求是通过点击 fetchBtn 发起：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs typescript"><span class="hljs-comment">//fetch.js</span><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">initFetchButton</span> = (<span class="hljs-params"></span>) =&gt; &#123;<br>  <span class="hljs-variable language_">window</span>.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&#x27;load&#x27;</span>, <span class="hljs-function">() =&gt;</span> &#123;<br>    <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&#x27;fetchBtn&#x27;</span>).<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&#x27;click&#x27;</span>, <span class="hljs-keyword">async</span> () =&gt; &#123;<br>      <span class="hljs-keyword">const</span> res = <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetch</span>(<span class="hljs-string">&#x27;/api/test&#x27;</span>);<br>      <span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> res.<span class="hljs-title function_">json</span>();<br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;result&#x27;</span>, result);<br>    &#125;);<br>  &#125;);<br>&#125;;<br><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">initSw</span> = (<span class="hljs-params"></span>) =&gt; &#123;<br>  <span class="hljs-variable language_">window</span>.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&#x27;load&#x27;</span>, <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-comment">//sw.js 放在网站根目录，代理网站所有资源</span><br>    navigator.<span class="hljs-property">serviceWorker</span>.<span class="hljs-title function_">register</span>(<span class="hljs-string">&#x27;/sw.js&#x27;</span>).<span class="hljs-title function_">then</span>(<br>      <span class="hljs-keyword">function</span> (<span class="hljs-params">registration</span>) &#123;<br>        <span class="hljs-comment">// Registration was successful</span><br>        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<br>          <span class="hljs-string">&#x27;ServiceWorker registration successful with scope: &#x27;</span>,<br>          registration.<span class="hljs-property">scope</span><br>        );<br>      &#125;,<br>      <span class="hljs-keyword">function</span> (<span class="hljs-params">err</span>) &#123;<br>        <span class="hljs-comment">// registration failed :(</span><br>        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;ServiceWorker registration failed: &#x27;</span>, err);<br>      &#125;<br>    );<br>  &#125;);<br>&#125;;<br><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">init</span> = (<span class="hljs-params"></span>) =&gt; &#123;<br>  <span class="hljs-title function_">initSw</span>();<br>  <span class="hljs-title function_">initFetchButton</span>();<br>&#125;;<br><br><span class="hljs-title function_">init</span>();<br></code></pre></td></tr></table></figure>
+
+<p>在 sw.js 中，我们对请求进行改写：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs typescript"><span class="hljs-comment">//sw.js</span><br>self.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&#x27;fetch&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">event</span>) =&gt;</span> &#123;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;event&#x27;</span>, event);<br>  <span class="hljs-keyword">if</span> (event.<span class="hljs-property">request</span>.<span class="hljs-property">url</span>.<span class="hljs-title function_">includes</span>(<span class="hljs-string">&#x27;/api/test&#x27;</span>)) &#123;<br>    event.<span class="hljs-title function_">respondWith</span>(<br>      <span class="hljs-keyword">new</span> <span class="hljs-title class_">Response</span>(<br>        <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(&#123;<br>          <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;sw rewrite result&#x27;</span>,<br>        &#125;)<br>      )<br>    );<br>  &#125;<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<p>点击 fetchBtn 查看请求结果，请求结果被成功改写：<br><img src="/img/sw/sw7.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"><br>上述改写为同步修改，适用于请求结果为固定值的场景。请求改写也支持异步修改，比如返回的结果依赖接口返回的数据</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs typescript"><span class="hljs-comment">//sw.js</span><br>self.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&#x27;fetch&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">event</span>) =&gt;</span> &#123;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;event&#x27;</span>, event);<br>  <span class="hljs-keyword">if</span> (event.<span class="hljs-property">request</span>.<span class="hljs-property">url</span>.<span class="hljs-title function_">includes</span>(<span class="hljs-string">&#x27;/api/test&#x27;</span>)) &#123;<br>    event.<span class="hljs-title function_">respondWith</span>(<br>      <span class="hljs-keyword">new</span> <span class="hljs-title class_">Promise</span>(<span class="hljs-keyword">async</span> (resolve, reject) =&gt; &#123;<br>        <span class="hljs-keyword">try</span> &#123;<br>          <span class="hljs-keyword">const</span> res = <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetch</span>(event.<span class="hljs-property">request</span>.<span class="hljs-title function_">clone</span>());<br>          <span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> res.<span class="hljs-title function_">json</span>();<br>          <span class="hljs-title function_">resolve</span>(<br>            <span class="hljs-keyword">new</span> <span class="hljs-title class_">Response</span>(<br>              <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(&#123;<br>                <span class="hljs-attr">name</span>: <span class="hljs-string">`<span class="hljs-subst">$&#123;result.name&#125;</span>_sw_rewrite`</span>,<br>              &#125;)<br>            )<br>          );<br>        &#125; <span class="hljs-keyword">catch</span> (error) &#123;<br>          <span class="hljs-title function_">reject</span>(e);<br>        &#125;<br>      &#125;)<br>    );<br>  &#125;<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<p>在返回结果的基础上进行改写，我们得到了返回结果：</p>
+<p><img src="/img/sw/sw8.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
+<p>需要注意，<strong>respondWith 需要立即同步调用</strong>，因为 sw 这里只是监听 fetch ，并不能阻止 respondWith 在其他地方被调用。第一个同步调用 respondWith 的处理程序获胜，其余尝试调用的处理程序将忽略。比如如果服务端请求响应先返回，那么会先调用 respondWith 将服务端结果返回给页面，而 sw 中的 respondWith 后执行，将被忽略</p>
+<h2 id="Cache-Storage"><a href="#Cache-Storage" class="headerlink" title="Cache Storage"></a>Cache Storage</h2><h3 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h3><ul>
+<li>cache storage 可以缓存浏览器的静态资源响应，只能缓存 get 请求</li>
+<li>缓存不会过期，但有大小限制（50MB 到 20GB 根据用户存储空间剩余大小），需要定期清理</li>
+<li>提供了一个 ServiceWorker 、其它类型 worker 或者 window 都可以访问到接口，通过全局变量 caches 访问</li>
+</ul>
+<h3 id="开始使用-1"><a href="#开始使用-1" class="headerlink" title="开始使用"></a>开始使用</h3><p>基于 Promise 提供了增删读写的 api：</p>
+<ol>
+<li>caches.open(cacheName)：打开 cacheName，没有的话自动创建该 cacheName，返回一个 promise，值为当前 cacheName 对应的 cache 存储对象</li>
+<li>cache.add(requestPath) 向 cache 中添加一个缓存，Service Worker 会自动发起请求缓存</li>
+<li>cache.addAll(requestPath) 向 cache 中添加多个缓存，Service Worker 会自动发起请求缓存</li>
+<li>caches.has(cacheName)：匹配当前的 cacheName 对象，返回一个 promise，有该 cacheName 则返回 true，否则返回 false</li>
+<li>caches.keys：返回一个 promise，其值为当前所有 cachesName，合并为一个数组</li>
+<li>caches.match(path, options)：匹配路由请求（参数一般写成路径形式），对于检查给定的 Request 是否是 CacheStorage 对象跟踪的任何 Cache 对象的键，并返回一个 resolve 为该匹配的 Promise。<blockquote>
+<p>可选 options 参数:</p>
+<ul>
+<li>ignoreSearch: Boolean ，指定匹配过程是否应该忽略 url 中查询参数。举个例子，如果该参数设置为 true, 那么 ?value&#x3D;bar 作为 <a target="_blank" rel="noopener" href="http://foo.com/?value=bar">http://foo.com/?value=bar</a> 中的查询参数将会在匹配过程中被忽略。该参数默认 false。</li>
+<li>cacheName: DOMString 值， 表示所要搜索的缓存名称</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs typescript"><span class="hljs-keyword">const</span> <span class="hljs-title function_">initCacheLog</span> = <span class="hljs-keyword">async</span> (<span class="hljs-params"></span>) =&gt; &#123;<br>  <span class="hljs-keyword">const</span> cacheName = <span class="hljs-string">&#x27;ls-test&#x27;</span>;<br><br>  <span class="hljs-comment">//open</span><br>  <span class="hljs-keyword">const</span> cache = <span class="hljs-keyword">await</span> caches.<span class="hljs-title function_">open</span>(cacheName);<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;open res&#x27;</span>, cache);<br><br>  <span class="hljs-comment">//add</span><br>  <span class="hljs-keyword">await</span> cache.<span class="hljs-title function_">add</span>(<span class="hljs-string">&#x27;/api/addTest&#x27;</span>);<br><br>  <span class="hljs-comment">//addAll</span><br>  <span class="hljs-keyword">await</span> cache.<span class="hljs-title function_">addAll</span>([<span class="hljs-string">&#x27;/api/addAllTest1&#x27;</span>, <span class="hljs-string">&#x27;/api/addAllTest2&#x27;</span>]);<br><br>  <span class="hljs-comment">//has</span><br>  <span class="hljs-keyword">const</span> hasRes = <span class="hljs-keyword">await</span> caches.<span class="hljs-title function_">has</span>(cacheName);<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;has res&#x27;</span>, hasRes);<br><br>  <span class="hljs-comment">//keys</span><br>  <span class="hljs-keyword">const</span> keysRes = <span class="hljs-keyword">await</span> caches.<span class="hljs-title function_">keys</span>();<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;keys res&#x27;</span>, keysRes);<br><br>  <span class="hljs-comment">//match</span><br>  <span class="hljs-keyword">const</span> matchRes = <span class="hljs-keyword">await</span> caches.<span class="hljs-title function_">match</span>(<span class="hljs-string">&#x27;/api/addAllTest1&#x27;</span>);<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;match res&#x27;</span>, matchRes);<br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<p><img src="/img/sw/sw9.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"><br><img src="/img/sw/sw10.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
+<h2 id="网页请求优化"><a href="#网页请求优化" class="headerlink" title="网页请求优化"></a>网页请求优化</h2><p>结合 Service Worker 和 Cache Storage 可以对网页请求优化，下面记录我学习的两种方式： <strong>提升系统稳定性</strong> 和 <strong>提高响应速度</strong></p>
+<h3 id="提升系统稳定性"><a href="#提升系统稳定性" class="headerlink" title="提升系统稳定性"></a>提升系统稳定性</h3><p>大致思路：监听请求，通过 cache.match 拿到请求 path 对应的缓存，然后利用 respondWith 方法返回<br>有几个需要注意的点：</p>
+<ol>
+<li>需要考虑请求 path 没有缓存的情况，此时应该向服务器发起请求，将请求结果返回页面，并且将该缓存添加到 Cache ，便于之后可用</li>
+<li>需要考虑使用服务端返回的最新数据，当网络出问题时再使用不新鲜的缓存提高系统稳定性</li>
+</ol>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs typescript"><span class="hljs-comment">// sw.js</span><br>self.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&#x27;fetch&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">event</span>) =&gt;</span> &#123;<br>  <span class="hljs-keyword">if</span> (event.<span class="hljs-property">request</span>.<span class="hljs-property">url</span>.<span class="hljs-title function_">includes</span>(<span class="hljs-string">&#x27;/api/addTest&#x27;</span>)) &#123;<br>    event.<span class="hljs-title function_">respondWith</span>(<br>      <span class="hljs-keyword">new</span> <span class="hljs-title class_">Promise</span>(<span class="hljs-keyword">async</span> (resolve, reject) =&gt; &#123;<br>        <span class="hljs-keyword">try</span> &#123;<br>          <span class="hljs-comment">//最先获取服务端结果，如果服务端数据返回直接用服务端数据，并且更新缓存</span><br>          <span class="hljs-keyword">const</span> res = <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetch</span>(event.<span class="hljs-property">request</span>.<span class="hljs-title function_">clone</span>());<br>          <span class="hljs-comment">// cacheName 为 ls-test，在该 cache 目录下存放请求缓存</span><br>          caches.<span class="hljs-title function_">open</span>(<span class="hljs-string">&#x27;ls-test&#x27;</span>).<span class="hljs-title function_">then</span>(<span class="hljs-function">(<span class="hljs-params">cache</span>) =&gt;</span> &#123;<br>            <span class="hljs-keyword">try</span> &#123;<br>              cache.<span class="hljs-title function_">add</span>(event.<span class="hljs-property">request</span>.<span class="hljs-title function_">clone</span>());<br>            &#125; <span class="hljs-keyword">catch</span> (error) &#123;&#125;<br>          &#125;);<br>          <span class="hljs-keyword">if</span> (res.<span class="hljs-property">ok</span>) &#123;<br>            <span class="hljs-title function_">resolve</span>(res);<br>          &#125; <span class="hljs-keyword">else</span> &#123;<br>            <span class="hljs-comment">//获取服务端数据失败，抛出错误</span><br>            <span class="hljs-keyword">throw</span> res.<span class="hljs-property">statusText</span>;<br>          &#125;<br>        &#125; <span class="hljs-keyword">catch</span> (error) &#123;<br>          <span class="hljs-comment">//服务端请求失败，使用缓存，没有缓存，抛出请求错误</span><br>          <span class="hljs-keyword">const</span> cache = <span class="hljs-keyword">await</span> caches.<span class="hljs-title function_">match</span>(event.<span class="hljs-property">request</span>.<span class="hljs-title function_">clone</span>());<br>          <span class="hljs-keyword">if</span> (cache) &#123;<br>            <span class="hljs-title function_">resolve</span>(cache);<br>          &#125; <span class="hljs-keyword">else</span> &#123;<br>            <span class="hljs-title function_">reject</span>(e);<br>          &#125;<br>        &#125;<br>      &#125;)<br>    );<br>  &#125;<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<h3 id="提高响应速度"><a href="#提高响应速度" class="headerlink" title="提高响应速度"></a>提高响应速度</h3><p>页面应用中会有多次获取同一个静态资源的情况，如单页面应用组件重复构建，多页面应用页面反复切换，这两种情况下静态资源都会重复请求。可以通过 Service Worker 对静态资源进行缓存，减少资源加载时间</p>
+<p>改写 fetch.js ，点击 fetchBtn ，请求 10 次同一图片</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><code class="hljs typescript"><span class="hljs-comment">// /src/fetch.js</span><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">initFetchButton</span> = (<span class="hljs-params"></span>) =&gt; &#123;<br>  <span class="hljs-variable language_">window</span>.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&#x27;load&#x27;</span>, <span class="hljs-function">() =&gt;</span> &#123;<br>    <span class="hljs-variable language_">document</span><br>      .<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&#x27;fetchBtn&#x27;</span>)<br>      .<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&#x27;click&#x27;</span>, fetchImageInterval);<br>  &#125;);<br>&#125;;<br><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">fetchImageInterval</span> = (<span class="hljs-params"></span>) =&gt; &#123;<br>  <span class="hljs-keyword">let</span> maxTimes = <span class="hljs-number">10</span>;<br>  <span class="hljs-built_in">setInterval</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>    <span class="hljs-keyword">if</span> (maxTimes &gt; <span class="hljs-number">0</span>) &#123;<br>      <span class="hljs-title function_">fetch</span>(<br>        <span class="hljs-string">&#x27;https://lf3-static.bytednsdoc.com/obj/eden-cn/jiheh7nuhboznuhps/home-page.png&#x27;</span><br>      );<br>    &#125;<br>    maxTimes = maxTimes - <span class="hljs-number">1</span>;<br>  &#125;, <span class="hljs-number">1000</span>);<br>&#125;;<br><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">initSw</span> = (<span class="hljs-params"></span>) =&gt; &#123;<br>  <span class="hljs-variable language_">window</span>.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&#x27;load&#x27;</span>, <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-comment">//sw.js 放在网站根目录，代理网站所有资源</span><br>    navigator.<span class="hljs-property">serviceWorker</span>.<span class="hljs-title function_">register</span>(<span class="hljs-string">&#x27;/sw.js&#x27;</span>).<span class="hljs-title function_">then</span>(<br>      <span class="hljs-keyword">function</span> (<span class="hljs-params">registration</span>) &#123;<br>        <span class="hljs-comment">// Registration was successful</span><br>        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<br>          <span class="hljs-string">&#x27;ServiceWorker registration successful with scope: &#x27;</span>,<br>          registration.<span class="hljs-property">scope</span><br>        );<br>      &#125;,<br>      <span class="hljs-keyword">function</span> (<span class="hljs-params">err</span>) &#123;<br>        <span class="hljs-comment">// registration failed :(</span><br>        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;ServiceWorker registration failed: &#x27;</span>, err);<br>      &#125;<br>    );<br>  &#125;);<br>&#125;;<br><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">init</span> = (<span class="hljs-params"></span>) =&gt; &#123;<br>  <span class="hljs-title function_">initSw</span>();<br>  <span class="hljs-title function_">initFetchButton</span>();<br>&#125;;<br><br><span class="hljs-title function_">init</span>();<br></code></pre></td></tr></table></figure>
+
+<p>先来看一下不使用 Service Worker 网页加载十次图片资源的速度。<br>network 查看资源下载速度如下：</p>
+<p><img src="/img/sw/sw11.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"><br>我们再在 Service Worker 中对该图片进行缓存：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs typescript">self.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&#x27;fetch&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">event</span>) =&gt;</span> &#123;<br>  <span class="hljs-keyword">if</span> (event.<span class="hljs-property">request</span>.<span class="hljs-property">url</span>.<span class="hljs-title function_">includes</span>(<span class="hljs-string">&#x27;home-page.png&#x27;</span>)) &#123;<br>    event.<span class="hljs-title function_">respondWith</span>(<br>      <span class="hljs-keyword">new</span> <span class="hljs-title class_">Promise</span>(<span class="hljs-keyword">async</span> (resolve, reject) =&gt; &#123;<br>        <span class="hljs-keyword">const</span> cache = <span class="hljs-keyword">await</span> caches.<span class="hljs-title function_">match</span>(event.<span class="hljs-property">request</span>.<span class="hljs-title function_">clone</span>());<br>        <span class="hljs-keyword">if</span> (cache) &#123;<br>          <span class="hljs-comment">// 缓存中有，返回缓存</span><br>          <span class="hljs-title function_">resolve</span>(cache);<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>          <span class="hljs-keyword">try</span> &#123;<br>            <span class="hljs-comment">// 缓存中没有去向服务端发起请求，请求结果返回给页面，更新缓存</span><br>            <span class="hljs-keyword">const</span> res = <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetch</span>(event.<span class="hljs-property">request</span>.<span class="hljs-title function_">clone</span>());<br>            <span class="hljs-keyword">if</span> (res.<span class="hljs-property">ok</span>) &#123;<br>              <span class="hljs-title function_">resolve</span>(res);<br>            &#125; <span class="hljs-keyword">else</span> &#123;<br>              <span class="hljs-keyword">throw</span> res.<span class="hljs-property">statusText</span>;<br>            &#125;<br>            <span class="hljs-keyword">try</span> &#123;<br>              caches.<span class="hljs-title function_">open</span>(<span class="hljs-string">&#x27;ls-test&#x27;</span>).<span class="hljs-title function_">then</span>(<span class="hljs-function">(<span class="hljs-params">_cache</span>) =&gt;</span> &#123;<br>                _cache.<span class="hljs-title function_">add</span>(event.<span class="hljs-property">request</span>.<span class="hljs-title function_">clone</span>());<br>              &#125;);<br>            &#125; <span class="hljs-keyword">catch</span> (error) &#123;&#125;<br>          &#125; <span class="hljs-keyword">catch</span> (error) &#123;<br>            <span class="hljs-title function_">reject</span>(error);<br>          &#125;<br>        &#125;<br>      &#125;)<br>    );<br>  &#125;<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<p>资源被缓存到 cache 中：<br><img src="/img/sw/sw12.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
+<p>看一下资源加载速度：</p>
+<p><img src="/img/sw/sw13.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"><br>可以看到，使用缓存资源后，加载速度仅需几 ms ！</p>
+<h2 id="生态"><a href="#生态" class="headerlink" title="生态"></a>生态</h2><ul>
+<li>Workbox： Google Chrome 开源的一套 Service Worker 解决方案，对 Service Worker 可能遇到的各种场景进行封装，降低上手成本</li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>基于 Service Worker 和 Cache 的性能优化</div>
+      <div>https://869359954.github.io/2023/02/11/基于 Service Worker 和 Cache 的性能优化/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>梁爽</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年2月11日</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>更新于</div>
+          <div>2023年11月29日</div>
+        </div>
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/05/05/%E4%BB%A3%E7%A0%81%E6%8F%90%E4%BA%A4%E8%A7%84%E8%8C%83/" title="代码提交规范">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">代码提交规范</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/01/14/npm%20install%20%E5%8E%9F%E7%90%86/" title="npm install 原理">
+                        <span class="hidden-mobile">npm install 原理</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
