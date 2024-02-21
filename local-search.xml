@@ -4,6 +4,19 @@
   
   
   <entry>
+    <title>Chrome 调试技巧</title>
+    <link href="/2024/02/21/Chrome%E8%B0%83%E8%AF%95%E6%8A%80%E5%B7%A7/"/>
+    <url>/2024/02/21/Chrome%E8%B0%83%E8%AF%95%E6%8A%80%E5%B7%A7/</url>
+    
+    <content type="html"><![CDATA[<blockquote><p>记录一些好用的调试技巧</p></blockquote><h2 id="暂停-UI-在-Hover-状态下的展示结果"><a href="#暂停-UI-在-Hover-状态下的展示结果" class="headerlink" title="暂停 UI 在 Hover 状态下的展示结果"></a>暂停 UI 在 Hover 状态下的展示结果</h2><p>场景举例：比如检查一个 Tooltip。一般情况下，在右击并选择检查时，元素已经消失了，那么该怎么检查 hover 状态下的元素呢？</p><ol><li>首先切换到 Source 面板</li><li>显示 ToolTip</li><li>使用快捷键 F8 或 command + ，使 Source 面板打开断点调试状态</li><li>回到 Elements 面板，就可以像通常一样去检查元素了</li></ol><h2 id="快速定位样式来源"><a href="#快速定位样式来源" class="headerlink" title="快速定位样式来源"></a>快速定位样式来源</h2><p>一个节点上的样式可能会受多处代码影响，computed style 能够查看真正使它生效的 css 样式。在 computerd 面板找到要查看的属性，点击属性前面箭头即可查看和修改属性</p><h2 id="调试选中元素"><a href="#调试选中元素" class="headerlink" title="调试选中元素"></a>调试选中元素</h2><p>现在 Elements 面板中，使用箭头选中 html 节点。再切换到 console ，输入 $0 得到当前节点的饮用，依次， 1 ** 是上一个选择的节点的引用，最多到 4</p><h2 id="docuemnt-querySelector-和-document-querySelectorAll-的快捷使用"><a href="#docuemnt-querySelector-和-document-querySelectorAll-的快捷使用" class="headerlink" title="docuemnt.querySelector 和 document.querySelectorAll 的快捷使用"></a>docuemnt.querySelector 和 document.querySelectorAll 的快捷使用</h2><p>在 console 控制台，$ 是 docuemnt.querySelector 的别名，$$ 是 document.querySelectorAll 的别名</p><h2 id="copy"><a href="#copy" class="headerlink" title="copy"></a>copy</h2><p>copy(myArray) 能够把 console 中的变量复制到剪贴板，对于数组、对象很实用</p>]]></content>
+    
+    
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>antv-x6</title>
     <link href="/2023/11/29/antv-x6/"/>
     <url>/2023/11/29/antv-x6/</url>
