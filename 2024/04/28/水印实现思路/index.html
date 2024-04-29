@@ -24,7 +24,7 @@
 <meta property="og:description" content="使用1&lt;WaterMark &amp;#123;...props&amp;#125;&gt; &amp;#123;children&amp;#125; &lt;&#x2F;WaterMark&gt;  props 可传入文字 content 或者图片 image，做为水印内容props 可传入 container 做为水印容器 实现 像 container 中插入水印元素获取 WaterMark 元素的 container ，创建一">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2024-04-27T16:00:00.000Z">
-<meta property="article:modified_time" content="2024-04-28T12:58:33.061Z">
+<meta property="article:modified_time" content="2024-04-29T02:36:44.380Z">
 <meta property="article:author" content="梁爽">
 <meta name="twitter:card" content="summary_large_image">
   
@@ -195,7 +195,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1k 字
+          1.1k 字
         
       </span>
     
@@ -206,7 +206,7 @@
         
         
         
-          9 分钟
+          10 分钟
         
       </span>
     
@@ -262,7 +262,7 @@
               <p class="note note-info">
                 
                   
-                    本文最后更新于：2024年4月28日 晚上
+                    本文最后更新于：2024年4月29日 上午
                   
                 
               </p>
@@ -287,6 +287,8 @@
 <li>canvas 绘制水印的过程中，需要注意 canvas 的宽高，水印内容图片的宽高，水印元素的宽高，通过 ctx.measureText(content) 可以拿到实际渲染的大小。旋转后的宽高需要计算</li>
 </ol>
 <figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs arduino"><span class="hljs-keyword">return</span> &#123;<br>  originWidth: width, <span class="hljs-comment">// 原始宽度</span><br>  originHeight: height, <span class="hljs-comment">// 原始高度</span><br>  <span class="hljs-comment">// rotate 旋转后的实际占位宽度</span><br>  width: Math.<span class="hljs-built_in">ceil</span>(Math.<span class="hljs-built_in">abs</span>(Math.<span class="hljs-built_in">sin</span>(angle) * height) + Math.<span class="hljs-built_in">abs</span>(Math.<span class="hljs-built_in">cos</span>(angle) * width)),<br>  <span class="hljs-comment">// rotate 旋转后的实际占位高度</span><br>  height: Math.<span class="hljs-built_in">ceil</span>(Math.<span class="hljs-built_in">abs</span>(Math.<span class="hljs-built_in">sin</span>(angle) * width) + Math.<span class="hljs-built_in">abs</span>(height * Math.<span class="hljs-built_in">cos</span>(angle))),<br>  lineSize,<br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><p><a target="_blank" rel="noopener" href="https://github.com/arco-design/arco-design/blob/main/components/Watermark/watermark.tsx">https://github.com/arco-design/arco-design/blob/main/components/Watermark/watermark.tsx</a></p>
 
                 
               </div>
@@ -323,7 +325,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>更新于</div>
-          <div>2024年4月28日</div>
+          <div>2024年4月29日</div>
         </div>
       
       
